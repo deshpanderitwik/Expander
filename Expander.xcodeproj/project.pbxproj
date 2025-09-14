@@ -9,15 +9,20 @@
 /* Begin PBXBuildFile section */
 		5CDB87DD2E76217F00DA0A1F /* ExpanderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */; };
 		5CDB87DF2E76217F00DA0A1F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87DE2E76217F00DA0A1F /* ContentView.swift */; };
-		5CDB88202E76D00000DA0A1F /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */; };
-		5CDB88222E76D00000DA0A1F /* Conversation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */; };
-		5CDB88242E76D00000DA0A1F /* Message+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */; };
 		5CDB87E12E76218000DA0A1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5CDB87E02E76218000DA0A1F /* Assets.xcassets */; };
 		5CDB87E42E76218000DA0A1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5CDB87E32E76218000DA0A1F /* Preview Assets.xcassets */; };
 		5CDB87EE2E76218000DA0A1F /* ExpanderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87ED2E76218000DA0A1F /* ExpanderTests.swift */; };
 		5CDB87F82E76218000DA0A1F /* ExpanderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87F72E76218000DA0A1F /* ExpanderUITests.swift */; };
 		5CDB87FA2E76218000DA0A1F /* ExpanderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87F92E76218000DA0A1F /* ExpanderUITestsLaunchTests.swift */; };
 		5CDB88082E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88062E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld */; };
+		5CDB881C2E76FBAA00DA0A1F /* LLMModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88192E76FBAA00DA0A1F /* LLMModels.swift */; };
+		5CDB881D2E76FBAA00DA0A1F /* LLMError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB881A2E76FBAA00DA0A1F /* LLMError.swift */; };
+		5CDB881E2E76FBAA00DA0A1F /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB881B2E76FBAA00DA0A1F /* LLMService.swift */; };
+		5CDB88202E76D00000DA0A1F /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */; };
+		5CDB88222E76D00000DA0A1F /* Conversation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */; };
+		5CDB88242E76D00000DA0A1F /* Message+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */; };
+		5CDB88262E76D00000DA0A1F /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88252E76D00000DA0A1F /* ConfigManager.swift */; };
+		5CDB88282E76D00000DA0A1F /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5CDB88272E76D00000DA0A1F /* Config.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,9 +46,6 @@
 		5CDB87D92E76217F00DA0A1F /* Expander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Expander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderApp.swift; sourceTree = "<group>"; };
 		5CDB87DE2E76217F00DA0A1F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
-		5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
-		5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Extensions.swift"; sourceTree = "<group>"; };
 		5CDB87E02E76218000DA0A1F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5CDB87E32E76218000DA0A1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5CDB87E92E76218000DA0A1F /* ExpanderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExpanderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +54,14 @@
 		5CDB87F72E76218000DA0A1F /* ExpanderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderUITests.swift; sourceTree = "<group>"; };
 		5CDB87F92E76218000DA0A1F /* ExpanderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5CDB88072E76CA3600DA0A1F /* ExpanderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ExpanderModel.xcdatamodel; sourceTree = "<group>"; };
+		5CDB88192E76FBAA00DA0A1F /* LLMModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMModels.swift; sourceTree = "<group>"; };
+		5CDB881A2E76FBAA00DA0A1F /* LLMError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMError.swift; sourceTree = "<group>"; };
+		5CDB881B2E76FBAA00DA0A1F /* LLMService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
+		5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Extensions.swift"; sourceTree = "<group>"; };
+		5CDB88252E76D00000DA0A1F /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
+		5CDB88272E76D00000DA0A1F /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,11 +112,16 @@
 		5CDB87DB2E76217F00DA0A1F /* Expander */ = {
 			isa = PBXGroup;
 			children = (
+				5CDB881A2E76FBAA00DA0A1F /* LLMError.swift */,
+				5CDB88192E76FBAA00DA0A1F /* LLMModels.swift */,
+				5CDB881B2E76FBAA00DA0A1F /* LLMService.swift */,
 				5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */,
 				5CDB87DE2E76217F00DA0A1F /* ContentView.swift */,
 				5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */,
 				5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */,
 				5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */,
+				5CDB88252E76D00000DA0A1F /* ConfigManager.swift */,
+				5CDB88272E76D00000DA0A1F /* Config.plist */,
 				5CDB88062E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld */,
 				5CDB87E02E76218000DA0A1F /* Assets.xcassets */,
 				5CDB87E22E76218000DA0A1F /* Preview Content */,
@@ -245,6 +260,7 @@
 			files = (
 				5CDB87E42E76218000DA0A1F /* Preview Assets.xcassets in Resources */,
 				5CDB87E12E76218000DA0A1F /* Assets.xcassets in Resources */,
+				5CDB88282E76D00000DA0A1F /* Config.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,8 +288,12 @@
 				5CDB87DF2E76217F00DA0A1F /* ContentView.swift in Sources */,
 				5CDB87DD2E76217F00DA0A1F /* ExpanderApp.swift in Sources */,
 				5CDB88202E76D00000DA0A1F /* CoreDataManager.swift in Sources */,
+				5CDB881E2E76FBAA00DA0A1F /* LLMService.swift in Sources */,
+				5CDB881C2E76FBAA00DA0A1F /* LLMModels.swift in Sources */,
 				5CDB88222E76D00000DA0A1F /* Conversation+Extensions.swift in Sources */,
+				5CDB881D2E76FBAA00DA0A1F /* LLMError.swift in Sources */,
 				5CDB88242E76D00000DA0A1F /* Message+Extensions.swift in Sources */,
+				5CDB88262E76D00000DA0A1F /* ConfigManager.swift in Sources */,
 				5CDB88082E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

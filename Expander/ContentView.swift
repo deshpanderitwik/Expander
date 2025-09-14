@@ -13,6 +13,9 @@ struct ContentView: View {
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.managedObjectContext) private var viewContext
     @State private var currentConversation: Conversation?
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var systemPrompt = "You are a masterful literary writer with a sharp eye for emotional nuance and sensory texture. Your prose is cinematic, immersive, and rhythmically alive—recalling the emotional depth of Ishiguro, the lushness of García Márquez, and the sculpted clarity of Tartt. You render the ordinary with mythic weight, and the mythic with human intimacy. When given a scene or character, you write with layered sensuality: light, texture, scent, sound, spatial rhythm. Beneath the surface, let a current of emotion—nostalgia, longing, dread, joy—move subtly through tone and silence. Reveal character through what they don't say: gesture, stillness, a broken pattern. The setting breathes too—alive with memory and intent, never just background. Sentence length shifts with feeling: some clipped and quiet, others long and tidal. Let the prose feel composed but never static. Each paragraph should stand on its own, yet draw the reader deeper into a world that pulses with presence and hidden feeling."
     
     var body: some View {
         NavigationStack {
@@ -40,7 +43,7 @@ struct ContentView: View {
                 Spacer()
                 
                 // Settings Icon (right)
-                NavigationLink(destination: SettingsView()) {
+                NavigationLink(destination: SettingsView(systemPrompt: $systemPrompt)) {
                     Image(systemName: "gearshape")
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(Color(red: 1.0, green: 0.23, blue: 0.19))
@@ -50,9 +53,11 @@ struct ContentView: View {
             .padding(.horizontal)
             .padding(.top, 20) // Safe area padding for top
             
-            // Chat Area 
-            ScrollView {
-                LazyVStack(spacing: 16) {
+            // Chat Area with gradient overlay
+            ZStack(alignment: .top) {
+                ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 16) {
                     // Day Header
                     Text("Day \(currentConversation?.dayNumber ?? 1)")
                         .font(.headline)
@@ -63,11 +68,13 @@ struct ContentView: View {
                     
                     // Summary (show if conversation exists and has messages)
                     if let conversation = currentConversation, conversation.hasMessages {
-                        Text(conversation.summary ?? "Great! This is the Expander app. We're building it step by step. What would you like to explore first?")
+                        if let summary = conversation.summary, !summary.isEmpty {
+                            Text(summary)
                                 .foregroundColor(.white)
                                 .fontWeight(.bold)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 20)
+                        }
                     }
                     
                     // Display messages from Core Data
@@ -86,77 +93,145 @@ struct ContentView: View {
                                     .padding(.horizontal, 20)
                             }
                         }
+                        
+                        // Show compact breathwork timer for AI response
+                        if isLoading {
+                            CompactBreathworkTimerView()
+                                .id("breathwork-timer")
+                        }
+                        
+                        // Show error message if any
+                        if let errorMessage = errorMessage {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Error")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.red)
+                                    .padding(.horizontal, 20)
+                                
+                                Text(errorMessage)
+                                    .foregroundColor(.red)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 20)
+                            }
+                        }
                     }
                     
-                    // Compact Breathwork Timer
-                    BreathworkTimerView(isCompact: true)
-                        .padding(.horizontal, 20)
+                    // Compact Breathwork Timer - removed for clean chat experience
+                    // BreathworkTimerView(isCompact: true)
+                    //     .padding(.horizontal, 20)
                 }
                 .padding(.vertical, 20)
             }
-            
-            // Input Area
-            HStack(alignment: .center, spacing: 0) {
-                TextField("Type your message...", text: $messageText, axis: .vertical)
-                    .focused($isTextFieldFocused)
-                    .lineLimit(1...5)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    )
-                    .padding(.horizontal, 20)
-                
-                Button(action: {
-                    sendMessage()
-                }) {
-                    Image(systemName: "arrow.up")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(red: 1.0, green: 0.23, blue: 0.19))
-                        .frame(width: 24, height: 24)
-                        .overlay(
-                            Circle()
-                                .stroke(Color(red: 1.0, green: 0.23, blue: 0.19), lineWidth: 1)
-                        )
+            .onChange(of: isLoading) { _, newValue in
+                if newValue {
+                    // Scroll to breathwork timer when loading starts
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            proxy.scrollTo("breathwork-timer", anchor: .bottom)
+                        }
+                    }
                 }
-                .padding(.trailing, 32)
             }
-            .padding(.bottom, 16)
+            }
+                
+                // Top gradient overlay that sits on top of scrollable content
+                VStack {
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.black,
+                            Color.black.opacity(0.8),
+                            Color.black.opacity(0.4),
+                            Color.clear
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 24)
+                    .allowsHitTesting(false)
+                    
+                    Spacer()
+                }
+                
+            }
+            
+            // Main Chat Footer with Gradient
+            FooterWithGradient(gradientHeight: 36, gradientOffset: -36) {
+                HStack(alignment: .center, spacing: 0) {
+                    TextField("Type your message...", text: $messageText, axis: .vertical)
+                        .focused($isTextFieldFocused)
+                        .lineLimit(1...5)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                        .padding(.horizontal, 20)
+                    
+                    Button(action: {
+                        print("🔘 Send button tapped, isLoading: \(isLoading)")
+                        sendMessage()
+                    }) {
+                        if isLoading {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .frame(width: 24, height: 24)
+                        } else {
+                            Image(systemName: "arrow.up")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(red: 1.0, green: 0.23, blue: 0.19))
+                                .frame(width: 24, height: 24)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color(red: 1.0, green: 0.23, blue: 0.19), lineWidth: 1)
+                                )
+                        }
+                    }
+                    .disabled(isLoading)
+                    .padding(.trailing, 32)
+                }
+                .padding(.top, 20)
+                .padding(.bottom, 16)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .onTapGesture {
             isTextFieldFocused = false
+            // Dismiss error message when tapping
+            if errorMessage != nil {
+                errorMessage = nil
+            }
         }
         .onAppear {
             setupCurrentConversation()
+            
+            // Safety mechanism: Reset loading state if it gets stuck
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if isLoading {
+                    print("⚠️ Loading state was stuck, resetting...")
+                    isLoading = false
+                }
+            }
         }
         }
     }
     
     // MARK: - Core Data Methods
-    
+        
     private func setupCurrentConversation() {
         let manager = CoreDataManager.shared
         let today = Date()
         
-        currentConversation = manager.getOrCreateConversation(for: today)
-        
-        // Test: Add some initial messages if conversation is empty
-        if let conversation = currentConversation, !conversation.hasMessages {
-            // Add a welcome AI message
-            manager.addMessage(to: conversation, content: "Hello! I'm your AI assistant. How can I help you today?", role: "ai")
-            
-            // Add a sample user message
-            manager.addMessage(to: conversation, content: "Hi! I'd like to learn more about this app.", role: "user")
-            
-            // Add a response
-            manager.addMessage(to: conversation, content: "Great! This is the Expander app. We're building it step by step. What would you like to explore first?", role: "ai")
-            
-        }
+        // Use start of day to ensure consistent date matching
+        let calendar = Calendar.current
+        let normalizedToday = calendar.startOfDay(for: today)
+        print("📅 Main view: Getting conversation for normalized date: \(normalizedToday)")
+        currentConversation = manager.getOrCreateConversation(for: normalizedToday)
+        print("🏠 Main view: Current conversation set - hasMessages: \(currentConversation?.hasMessages == true), message count: \(currentConversation?.messages?.count ?? 0)")
     }
     
     private func sendMessage() {
@@ -166,16 +241,48 @@ struct ContentView: View {
         let manager = CoreDataManager.shared
         
         // Add user message
-        manager.addMessage(to: conversation, content: messageText, role: "user")
+        _ = manager.addMessage(to: conversation, content: messageText, role: "user")
+        print("💬 Main view: Added user message to conversation - total messages: \(conversation.messages?.count ?? 0)")
         
-        // Clear text field
+        // Clear text field and error message
         messageText = ""
+        errorMessage = nil
         
-        // Simulate AI response (for now, just echo back)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            manager.addMessage(to: conversation, content: "Thanks for your message: \"\(messageText)\"", role: "ai")
+        // Set loading state
+        isLoading = true
+        print("🔄 Set isLoading to true")
+        
+        // Debug: Check if LLMService is ready
+        print("LLMService is ready: \(LLMService.shared.isReady)")
+        print("Configuration status: \(LLMService.shared.configurationStatus)")
+        
+        // Send message to LLM service
+        LLMService.shared.sendMessage(
+            messages: conversation.sortedMessages,
+            systemPrompt: systemPrompt
+        ) { result in
+            DispatchQueue.main.async {
+                isLoading = false
+                print("✅ Set isLoading to false")
+                
+                switch result {
+                case .success(let response):
+                    print("✅ LLM Response received: \(response)")
+                    // Add AI response to conversation
+                    _ = manager.addMessage(to: conversation, content: response, role: "ai")
+                    print("🤖 Main view: Added AI response to conversation - total messages: \(conversation.messages?.count ?? 0)")
+                    
+                case .failure(let error):
+                    print("❌ LLM Error: \(error)")
+                    // Show user-friendly error message
+                    errorMessage = error.userMessage
+                    
+                    // Add a fallback message to keep conversation flowing
+                    let fallbackMessage = "I apologize, but I'm having trouble responding right now. Please try again in a moment."
+                    _ = manager.addMessage(to: conversation, content: fallbackMessage, role: "ai")
+                }
+            }
         }
-        
     }
 }
 
@@ -191,9 +298,12 @@ struct CalendarView: View {
     
     private var dateRange: ClosedRange<Date> {
         let calendar = Calendar.current
-        let startDate = calendar.date(from: DateComponents(year: 2025, month: 9, day: 14))!
-        let fiveWeeksSixDaysFromStart = calendar.date(byAdding: .day, value: 41, to: startDate)! // 6 weeks - 1 day
-        return startDate...fiveWeeksSixDaysFromStart
+        let today = Date()
+        let currentMonth = calendar.component(.month, from: today)
+        let currentYear = calendar.component(.year, from: today)
+        let startDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 14))!
+        let endDate = calendar.date(byAdding: .day, value: 41, to: startDate)! // 6 weeks - 1 day
+        return startDate...endDate
     }
     
     private var calendarDays: [Date] {
@@ -271,7 +381,7 @@ struct BreathworkView: View {
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var systemPrompt = "These are the days that lie ahead—the days to come, marching toward me like an inevitable tide. The days that will form my transformation window, a sacred span where I rewrite the scripts of pain and reclaim the flow of my being. They approach, relentless and full of promise, these days I must traverse, carrying me from the shadows of what has been into the light of what could be."
+    @Binding var systemPrompt: String
     @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
@@ -279,50 +389,77 @@ struct SettingsView: View {
             // Custom Header
             CustomHeaderView()
             
-            VStack(alignment: .leading, spacing: 20) {
-                // System prompt section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("System prompt")
-                        .font(.system(size: 18))
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 20)
+            // Content area with gradient overlays
+            ZStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 20) {
+                    // System prompt section with gradient overlay
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("System prompt")
+                            .font(.system(size: 18))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 20)
+                        
+                        TextEditor(text: $systemPrompt)
+                            .font(.system(size: 18))
+                            .foregroundColor(.white)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(12)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 4) // Push text content below gradient
+                            .focused($isTextFieldFocused)
+                            .lineSpacing(5) // Adjust line height here
+                    }
+                    .overlay(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.black,
+                                Color.black.opacity(0.8),
+                                Color.black.opacity(0.4),
+                                Color.clear
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 24)
+                        .offset(y: 32) // Position after the title
+                        .allowsHitTesting(false),
+                        alignment: .top
+                    )
                     
-                    TextEditor(text: $systemPrompt)
-                        .font(.system(size: 18))
-                        .foregroundColor(.white)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(12)
-                        .padding(.horizontal, 16)
-                        .frame(minHeight: 200)
-                        .focused($isTextFieldFocused)
-                        .lineSpacing(5) // Adjust line height here
+                    Spacer()
                 }
                 
-                Spacer()
-                
-                // Update button
-                Button(action: {
-                    // Update action placeholder
-                }) {
-                    Text("Update")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.gray.opacity(0.3))
-                        .cornerRadius(12)
+            }
+            
+            // Settings Footer with Gradient
+            FooterWithGradient(gradientHeight: 24, gradientOffset: -52) {
+                HStack(alignment: .top, spacing: 0) {
+                    Button(action: {
+                        // Update system prompt action
+                        dismiss()
+                    }) {
+                        Text("Update")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Color.white.opacity(0.1))
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
+                    }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 40)
+                .padding(.top, 0)
+                .padding(.bottom, 16)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .navigationBarHidden(true)
-        .onTapGesture {
-            isTextFieldFocused = false
-        }
         .gesture(
             DragGesture()
                 .onEnded { value in
@@ -341,7 +478,7 @@ struct CustomCalendarView: View {
     let dateRange: ClosedRange<Date>
     
     private let calendar = Calendar.current
-    private let today = Calendar.current.date(from: DateComponents(year: 2025, month: 9, day: 15))! // Set today as Sept 15
+    private let today = Date() // Use actual current date
     
     var body: some View {
         VStack(spacing: 16) {            
@@ -443,9 +580,10 @@ struct DayView: View {
 
 struct DailyConversationView: View {
     let date: Date
+    @State private var conversation: Conversation?
     
     private let calendar = Calendar.current
-    private let today = Calendar.current.date(from: DateComponents(year: 2025, month: 9, day: 15))!
+    private let today = Date() // Use actual current date
     
     private var isElapsed: Bool {
         date < today
@@ -460,7 +598,11 @@ struct DailyConversationView: View {
     }
     
     private var dayNumber: Int {
-        let startDate = Calendar.current.date(from: DateComponents(year: 2025, month: 9, day: 14))!
+        let calendar = Calendar.current
+        let today = Date()
+        let currentMonth = calendar.component(.month, from: today)
+        let currentYear = calendar.component(.year, from: today)
+        let startDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 14))!
         return calendar.dateComponents([.day], from: startDate, to: date).day! + 1
     }
     
@@ -473,76 +615,113 @@ struct DailyConversationView: View {
                 .padding(.horizontal, 20)
             
             if isElapsed {
-                // Summary for elapsed days
-                    Text("Great! This is the Expander app. We're building it step by step. What would you like to explore first?")
-                            .foregroundColor(.white)
-                            .fontWeight(.bold)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
+                // Summary for elapsed days - will show actual conversation summary when available
+                if let conversation = conversation,
+                   let summary = conversation.summary, !summary.isEmpty {
+                    Text(summary)
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                } else if conversation?.hasMessages == true {
+                    Text("Summary will be generated at the end of the day.")
+                        .foregroundColor(.gray)
+                        .fontWeight(.medium)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                } else {
+                    Text("No conversation for this day.")
+                        .foregroundColor(.gray)
+                        .fontWeight(.medium)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                }
                 
-                // Conversation messages
-                VStack(alignment: .leading, spacing: 16) {
-                    // AI Message
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("AI")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal, 20)
-                        
-                        Text("Hello! I'm your AI assistant. How can I help you today?")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                    }
-                    
-                    // User Message
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("You")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal, 20)
-                        
-                        Text("Hi! I'd like to learn more about this app.")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                    }
-                    
-                    // AI Message
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("AI")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal, 20)
-                        
-                        Text("Great! This is the Expander app. We're building it step by step. What would you like to explore first?")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
+                // Show actual conversation messages if they exist
+                if let conversation = conversation,
+                   conversation.hasMessages {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(conversation.sortedMessages, id: \.id) { message in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(message.displayRole)
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.gray)
+                                    .padding(.horizontal, 20)
+                                
+                                Text(message.safeContent)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 20)
+                            }
+                        }
                     }
                 }
             } else if isToday {
                 // Today's conversation (in progress)
-                Text("Today's conversation is in progress. Check back later for the complete summary.")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.gray)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 20)
+                if let conversation = conversation,
+                   conversation.hasMessages {
+                    Text("Today's conversation is in progress.")
+                        .foregroundColor(.gray)
+                        .fontWeight(.medium)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                    
+                    // Show messages from today's conversation
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(conversation.sortedMessages, id: \.id) { message in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(message.displayRole)
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.gray)
+                                    .padding(.horizontal, 20)
+                                
+                                Text(message.safeContent)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 20)
+                            }
+                        }
+                    }
+                } else {
+                    Text("Today's conversation will appear here once you start chatting.")
+                        .foregroundColor(.gray)
+                        .fontWeight(.medium)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                }
             } else {
                 // Placeholder for future days
                 Text("Conversation will appear here once this day arrives.")
-                    .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.gray)
+                    .fontWeight(.medium)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 20)
             }
         }
         .padding(.bottom, 20)
+        .onAppear {
+            loadConversation()
+        }
+        .onChange(of: date) { _, _ in
+            loadConversation()
+        }
+    }
+    
+    private func loadConversation() {
+        conversation = CoreDataManager.shared.fetchConversation(for: date)
+        print("📅 Calendar: Loaded conversation for \(date)")
+        print("   - isElapsed: \(isElapsed)")
+        print("   - isToday: \(isToday)")
+        print("   - isFuture: \(isFuture)")
+        print("   - conversation exists: \(conversation != nil)")
+        print("   - hasMessages: \(conversation?.hasMessages == true)")
+        print("   - hasSummary: \(conversation?.summary?.isEmpty == false)")
+        if let conv = conversation {
+            print("   - message count: \(conv.messages?.count ?? 0)")
+            print("   - conversation date: \(conv.date ?? Date())")
+        }
     }
 }
 
@@ -702,6 +881,104 @@ struct BreathworkTimerView: View {
     }
 }
 
+// MARK: - Compact Breathwork Timer for Loading
+
+struct CompactBreathworkTimerView: View {
+    @State private var currentPhase = "Breathe In"
+    @State private var remainingSeconds = 1
+    @State private var currentCycle = 0
+    @State private var timer: Timer?
+    @State private var isCountingUp = true
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 16) {
+                // Compact circular timer
+                VStack(spacing: 12) {
+                    Text(currentPhase)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Color(red: 1.0, green: 0.23, blue: 0.19))
+                    
+                    ZStack {
+                        Circle()
+                            .stroke(Color(red: 1.0, green: 0.23, blue: 0.19), lineWidth: 2)
+                            .frame(width: 60, height: 60)
+                        
+                        Text("\(remainingSeconds)")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+        }
+        .onAppear {
+            // Reset timer to beginning state every time it appears
+            resetTimer()
+            startTimer()
+        }
+        .onDisappear {
+            stopTimer()
+        }
+    }
+    
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if isCountingUp {
+                // Counting up (Breathe In: 1→4, Hold: 1→7)
+                if currentPhase == "Breathe In" && remainingSeconds < 4 {
+                    remainingSeconds += 1
+                } else if currentPhase == "Hold" && remainingSeconds < 7 {
+                    remainingSeconds += 1
+                } else {
+                    nextPhase()
+                }
+            } else {
+                // Counting down (Breathe Out: 8→1)
+                if remainingSeconds > 1 {
+                    remainingSeconds -= 1
+                } else {
+                    nextPhase()
+                }
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    private func resetTimer() {
+        // Reset to beginning state
+        currentPhase = "Breathe In"
+        remainingSeconds = 1
+        isCountingUp = true
+    }
+    
+    private func nextPhase() {
+        // Breathwork phase cycling with specific countdown patterns
+        switch currentPhase {
+        case "Breathe In":
+            currentPhase = "Hold"
+            remainingSeconds = 1
+            isCountingUp = true
+        case "Hold":
+            currentPhase = "Breathe Out"
+            remainingSeconds = 8
+            isCountingUp = false
+        case "Breathe Out":
+            currentPhase = "Breathe In"
+            remainingSeconds = 1
+            isCountingUp = true
+        default:
+            currentPhase = "Breathe In"
+            remainingSeconds = 1
+            isCountingUp = true
+        }
+    }
+}
+
 // MARK: - Custom Header View
 
 struct CustomHeaderView: View {
@@ -725,3 +1002,41 @@ struct CustomHeaderView: View {
         .background(Color.black)
     }
 }
+
+// MARK: - Reusable Footer Component
+
+struct FooterWithGradient<Content: View>: View {
+    let gradientHeight: CGFloat
+    let gradientOffset: CGFloat
+    let gradientColors: [Color]
+    @ViewBuilder let content: () -> Content
+    
+    init(
+        gradientHeight: CGFloat = 24,
+        gradientOffset: CGFloat = 16, // Fixed offset from footer top
+        gradientColors: [Color] = [.black.opacity(0.9), .black.opacity(0.6), .black.opacity(0.2), .clear],
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.gradientHeight = gradientHeight
+        self.gradientOffset = gradientOffset
+        self.gradientColors = gradientColors
+        self.content = content
+    }
+    
+    var body: some View {
+        content()
+            .overlay(
+                // Gradient positioned relative to footer top
+                LinearGradient(
+                    gradient: Gradient(colors: gradientColors),
+                    startPoint: .bottom,
+                    endPoint: .top
+                )
+                .frame(height: gradientHeight)
+                .offset(y: gradientOffset) // Negative offset moves gradient up from footer
+                .allowsHitTesting(false),
+                alignment: .top // Align to footer top
+            )
+    }
+}
+
