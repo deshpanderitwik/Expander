@@ -9,11 +9,15 @@
 /* Begin PBXBuildFile section */
 		5CDB87DD2E76217F00DA0A1F /* ExpanderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */; };
 		5CDB87DF2E76217F00DA0A1F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87DE2E76217F00DA0A1F /* ContentView.swift */; };
+		5CDB88202E76D00000DA0A1F /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */; };
+		5CDB88222E76D00000DA0A1F /* Conversation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */; };
+		5CDB88242E76D00000DA0A1F /* Message+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */; };
 		5CDB87E12E76218000DA0A1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5CDB87E02E76218000DA0A1F /* Assets.xcassets */; };
 		5CDB87E42E76218000DA0A1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5CDB87E32E76218000DA0A1F /* Preview Assets.xcassets */; };
 		5CDB87EE2E76218000DA0A1F /* ExpanderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87ED2E76218000DA0A1F /* ExpanderTests.swift */; };
 		5CDB87F82E76218000DA0A1F /* ExpanderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87F72E76218000DA0A1F /* ExpanderUITests.swift */; };
 		5CDB87FA2E76218000DA0A1F /* ExpanderUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87F92E76218000DA0A1F /* ExpanderUITestsLaunchTests.swift */; };
+		5CDB88082E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88062E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +41,9 @@
 		5CDB87D92E76217F00DA0A1F /* Expander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Expander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderApp.swift; sourceTree = "<group>"; };
 		5CDB87DE2E76217F00DA0A1F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
+		5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Extensions.swift"; sourceTree = "<group>"; };
 		5CDB87E02E76218000DA0A1F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5CDB87E32E76218000DA0A1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5CDB87E92E76218000DA0A1F /* ExpanderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExpanderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +51,7 @@
 		5CDB87F32E76218000DA0A1F /* ExpanderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExpanderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDB87F72E76218000DA0A1F /* ExpanderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderUITests.swift; sourceTree = "<group>"; };
 		5CDB87F92E76218000DA0A1F /* ExpanderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		5CDB88072E76CA3600DA0A1F /* ExpanderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ExpanderModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +104,10 @@
 			children = (
 				5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */,
 				5CDB87DE2E76217F00DA0A1F /* ContentView.swift */,
+				5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */,
+				5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */,
+				5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */,
+				5CDB88062E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld */,
 				5CDB87E02E76218000DA0A1F /* Assets.xcassets */,
 				5CDB87E22E76218000DA0A1F /* Preview Content */,
 			);
@@ -259,6 +271,10 @@
 			files = (
 				5CDB87DF2E76217F00DA0A1F /* ContentView.swift in Sources */,
 				5CDB87DD2E76217F00DA0A1F /* ExpanderApp.swift in Sources */,
+				5CDB88202E76D00000DA0A1F /* CoreDataManager.swift in Sources */,
+				5CDB88222E76D00000DA0A1F /* Conversation+Extensions.swift in Sources */,
+				5CDB88242E76D00000DA0A1F /* Message+Extensions.swift in Sources */,
+				5CDB88082E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,6 +438,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Expander/Preview Content\"";
+				DEVELOPMENT_TEAM = 443MNYHZG2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -450,6 +467,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Expander/Preview Content\"";
+				DEVELOPMENT_TEAM = 443MNYHZG2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -582,6 +600,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		5CDB88062E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5CDB88072E76CA3600DA0A1F /* ExpanderModel.xcdatamodel */,
+			);
+			currentVersion = 5CDB88072E76CA3600DA0A1F /* ExpanderModel.xcdatamodel */;
+			name = ExpanderModel.xcdatamodeld;
+			path = /Users/rit/Desktop/code/2025/Expander/Expander/ExpanderModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 5CDB87D12E76217F00DA0A1F /* Project object */;
 }
