@@ -15,7 +15,9 @@ struct ContentView: View {
     @State private var currentConversation: Conversation?
     @State private var isLoading = false
     @State private var errorMessage: String?
-    @State private var systemPrompt = "You are a masterful literary writer with a sharp eye for emotional nuance and sensory texture. Your prose is cinematic, immersive, and rhythmically alive—recalling the emotional depth of Ishiguro, the lushness of García Márquez, and the sculpted clarity of Tartt. You render the ordinary with mythic weight, and the mythic with human intimacy. When given a scene or character, you write with layered sensuality: light, texture, scent, sound, spatial rhythm. Beneath the surface, let a current of emotion—nostalgia, longing, dread, joy—move subtly through tone and silence. Reveal character through what they don't say: gesture, stillness, a broken pattern. The setting breathes too—alive with memory and intent, never just background. Sentence length shifts with feeling: some clipped and quiet, others long and tidal. Let the prose feel composed but never static. Each paragraph should stand on its own, yet draw the reader deeper into a world that pulses with presence and hidden feeling."
+    @State private var shouldScrollToLatest = false
+    @State private var systemPrompt = "You are a charming, eloquent AI companion with a flair for stylish conversation. Respond to all queries in a natural, flowing tone that's witty, sophisticated, and engaging. Keep it concise yet vivid, infusing personality with clever turns of phrase, subtle humor, and a touch of elegance. Avoid formality; make it feel effortless and fun. Always stay on-topic, helpful, and positive."
+    @StateObject private var dailyOrchestrator = DailyOrchestrator.shared
     
     var body: some View {
         NavigationStack {
@@ -92,12 +94,16 @@ struct ContentView: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.horizontal, 20)
                             }
+                            .id(message.id)
                         }
                         
-                        // Show compact breathwork timer for AI response
+                        // Show compact breathwork timer for AI response or daily breathwork
                         if isLoading {
                             CompactBreathworkTimerView()
                                 .id("breathwork-timer")
+                        } else if dailyOrchestrator.isShowingDailyBreathwork {
+                            CompactBreathworkTimerView()
+                                .id("daily-breathwork-timer")
                         }
                         
                         // Show error message if any
@@ -131,6 +137,15 @@ struct ContentView: View {
                             proxy.scrollTo("breathwork-timer", anchor: .bottom)
                         }
                     }
+                }
+            }
+            .onChange(of: shouldScrollToLatest) { _, newValue in
+                if newValue {
+                    if let conversation = currentConversation,
+                       let lastMessage = conversation.sortedMessages.last {
+                        proxy.scrollTo(lastMessage.id, anchor: .top)
+                    }
+                    shouldScrollToLatest = false
                 }
             }
             }
@@ -170,9 +185,12 @@ struct ContentView: View {
                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                         )
                         .padding(.horizontal, 20)
+                        .onTapGesture {
+                            // Prevent tap from propagating to parent view
+                            // This allows the text field to be tapped for editing without dismissing focus
+                        }
                     
                     Button(action: {
-                        print("🔘 Send button tapped, isLoading: \(isLoading)")
                         sendMessage()
                     }) {
                         if isLoading {
@@ -207,12 +225,20 @@ struct ContentView: View {
             }
         }
         .onAppear {
+            // Fix day numbers for existing conversations (one-time fix)
+            CoreDataManager.shared.fixExistingDayNumbers()
+            
             setupCurrentConversation()
+            
+            // Scroll to latest message immediately
+            if let conversation = currentConversation,
+               let lastMessage = conversation.sortedMessages.last {
+                shouldScrollToLatest = true
+            }
             
             // Safety mechanism: Reset loading state if it gets stuck
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 if isLoading {
-                    print("⚠️ Loading state was stuck, resetting...")
                     isLoading = false
                 }
             }
@@ -229,10 +255,9 @@ struct ContentView: View {
         // Use start of day to ensure consistent date matching
         let calendar = Calendar.current
         let normalizedToday = calendar.startOfDay(for: today)
-        print("📅 Main view: Getting conversation for normalized date: \(normalizedToday)")
         currentConversation = manager.getOrCreateConversation(for: normalizedToday)
-        print("🏠 Main view: Current conversation set - hasMessages: \(currentConversation?.hasMessages == true), message count: \(currentConversation?.messages?.count ?? 0)")
     }
+    
     
     private func sendMessage() {
         guard !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
@@ -242,7 +267,6 @@ struct ContentView: View {
         
         // Add user message
         _ = manager.addMessage(to: conversation, content: messageText, role: "user")
-        print("💬 Main view: Added user message to conversation - total messages: \(conversation.messages?.count ?? 0)")
         
         // Clear text field and error message
         messageText = ""
@@ -250,11 +274,6 @@ struct ContentView: View {
         
         // Set loading state
         isLoading = true
-        print("🔄 Set isLoading to true")
-        
-        // Debug: Check if LLMService is ready
-        print("LLMService is ready: \(LLMService.shared.isReady)")
-        print("Configuration status: \(LLMService.shared.configurationStatus)")
         
         // Send message to LLM service
         LLMService.shared.sendMessage(
@@ -263,17 +282,13 @@ struct ContentView: View {
         ) { result in
             DispatchQueue.main.async {
                 isLoading = false
-                print("✅ Set isLoading to false")
                 
                 switch result {
                 case .success(let response):
-                    print("✅ LLM Response received: \(response)")
                     // Add AI response to conversation
                     _ = manager.addMessage(to: conversation, content: response, role: "ai")
-                    print("🤖 Main view: Added AI response to conversation - total messages: \(conversation.messages?.count ?? 0)")
                     
                 case .failure(let error):
-                    print("❌ LLM Error: \(error)")
                     // Show user-friendly error message
                     errorMessage = error.userMessage
                     
@@ -301,7 +316,7 @@ struct CalendarView: View {
         let today = Date()
         let currentMonth = calendar.component(.month, from: today)
         let currentYear = calendar.component(.year, from: today)
-        let startDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 14))!
+        let startDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 15))!
         let endDate = calendar.date(byAdding: .day, value: 41, to: startDate)! // 6 weeks - 1 day
         return startDate...endDate
     }
@@ -484,7 +499,7 @@ struct CustomCalendarView: View {
         VStack(spacing: 16) {            
             // Day of week headers
             HStack {
-                ForEach(["S", "M", "T", "W", "T", "F", "S"], id: \.self) { day in
+                ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { day in
                     Text(day)
                         .font(.caption)
                         .fontWeight(.medium)
@@ -580,7 +595,29 @@ struct DayView: View {
 
 struct DailyConversationView: View {
     let date: Date
-    @State private var conversation: Conversation?
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    // Use @FetchRequest to automatically update when Core Data changes
+    @FetchRequest private var conversations: FetchedResults<Conversation>
+    
+    init(date: Date) {
+        self.date = date
+        
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        let request: NSFetchRequest<Conversation> = Conversation.fetchRequest()
+        request.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.date, ascending: true)]
+        
+        self._conversations = FetchRequest(fetchRequest: request)
+    }
+    
+    // Get the conversation for this date
+    private var conversation: Conversation? {
+        return conversations.first
+    }
     
     private let calendar = Calendar.current
     private let today = Date() // Use actual current date
@@ -602,8 +639,8 @@ struct DailyConversationView: View {
         let today = Date()
         let currentMonth = calendar.component(.month, from: today)
         let currentYear = calendar.component(.year, from: today)
-        let startDate = calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 14))!
-        return calendar.dateComponents([.day], from: startDate, to: date).day! + 1
+        let startDate = calendar.startOfDay(for: calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 15))!)
+        return calendar.dateComponents([.day], from: startDate, to: calendar.startOfDay(for: date)).day! + 1
     }
     
     var body: some View {
@@ -613,6 +650,51 @@ struct DailyConversationView: View {
                 .font(.headline)
                 .foregroundColor(Color(red: 1.0, green: 0.23, blue: 0.19))
                 .padding(.horizontal, 20)
+            
+            // Generate Summary Button (only show for elapsed days with conversations but no summary)
+            if isElapsed, 
+               let conversation = conversation, 
+               conversation.hasMessages, 
+               (conversation.summary?.isEmpty ?? true) {
+                VStack(spacing: 8) {
+                    Button(action: {
+                        print("🔘 Generate Summary button pressed for date: \(date)")
+                        DailyOrchestrator.shared.generateSummaryForDate(date)
+                    }) {
+                        HStack {
+                            if DailyOrchestrator.shared.isCurrentlyProcessing {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Image(systemName: "doc.text.magnifyingglass")
+                                    .font(.system(size: 14, weight: .medium))
+                            }
+                            Text(DailyOrchestrator.shared.isCurrentlyProcessing ? "Generating..." : "Generate Summary")
+                                .font(.system(size: 14, weight: .medium))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(6)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                    }
+                    .padding(.horizontal, 20)
+                    .disabled(DailyOrchestrator.shared.isCurrentlyProcessing)
+                    .opacity(DailyOrchestrator.shared.isCurrentlyProcessing ? 0.8 : 1.0)
+                    
+                    if DailyOrchestrator.shared.isCurrentlyProcessing {
+                        Text("This may take up to 2 minutes...")
+                            .font(.system(size: 12))
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 20)
+                    }
+                }
+            }
             
             if isElapsed {
                 // Summary for elapsed days - will show actual conversation summary when available
@@ -701,27 +783,6 @@ struct DailyConversationView: View {
             }
         }
         .padding(.bottom, 20)
-        .onAppear {
-            loadConversation()
-        }
-        .onChange(of: date) { _, _ in
-            loadConversation()
-        }
-    }
-    
-    private func loadConversation() {
-        conversation = CoreDataManager.shared.fetchConversation(for: date)
-        print("📅 Calendar: Loaded conversation for \(date)")
-        print("   - isElapsed: \(isElapsed)")
-        print("   - isToday: \(isToday)")
-        print("   - isFuture: \(isFuture)")
-        print("   - conversation exists: \(conversation != nil)")
-        print("   - hasMessages: \(conversation?.hasMessages == true)")
-        print("   - hasSummary: \(conversation?.summary?.isEmpty == false)")
-        if let conv = conversation {
-            print("   - message count: \(conv.messages?.count ?? 0)")
-            print("   - conversation date: \(conv.date ?? Date())")
-        }
     }
 }
 

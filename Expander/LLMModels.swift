@@ -43,7 +43,7 @@ struct ChatRequest: Codable {
         model: String,
         messages: [APIMessage],
         stream: Bool = true,
-        maxTokens: Int? = 1000,
+        maxTokens: Int? = nil,
         temperature: Double? = 0.7,
         systemPrompt: String? = nil
     ) {
@@ -170,7 +170,7 @@ extension ChatRequest {
         systemPrompt: String? = nil,
         model: String,
         stream: Bool = false,
-        maxTokens: Int? = 1000,
+        maxTokens: Int? = nil,
         temperature: Double? = 0.7
     ) throws -> ChatRequest {
         let messages = conversation.sortedMessages.map { APIMessage(from: $0) }
@@ -207,7 +207,7 @@ extension ChatRequest {
         systemPrompt: String? = nil,
         model: String,
         stream: Bool = false,
-        maxTokens: Int? = 1000,
+        maxTokens: Int? = nil,
         temperature: Double? = 0.7
     ) throws -> ChatRequest {
         guard !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {

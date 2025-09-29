@@ -22,26 +22,19 @@ class LLMService: ObservableObject {
     // MARK: - Initialization
     
     private init() {
-        print("🚀 Initializing LLMService...")
-        
         // Configure URLSession with appropriate timeouts
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 30.0
-        config.timeoutIntervalForResource = 60.0
+        config.timeoutIntervalForRequest = 120.0  // Increased from 30 to 120 seconds
+        config.timeoutIntervalForResource = 180.0  // Increased from 60 to 180 seconds
         config.waitsForConnectivity = true
         
         self.urlSession = URLSession(configuration: config)
-        print("✅ URLSession configured")
         
         // Start network monitoring
         startNetworkMonitoring()
-        print("✅ Network monitoring started")
         
         // Validate configuration on initialization
         validateConfiguration()
-        print("✅ Configuration validated")
-        
-        print("🎉 LLMService initialization complete")
     }
     
     deinit {
@@ -51,12 +44,9 @@ class LLMService: ObservableObject {
     // MARK: - Configuration Validation
     
     private func validateConfiguration() {
-        print("🔍 Validating configuration...")
         guard configManager.validateConfiguration() else {
-            print("❌ Configuration validation failed")
             return
         }
-        print("✅ Configuration validated successfully")
     }
     
     // MARK: - Network Monitoring
@@ -217,7 +207,7 @@ class LLMService: ObservableObject {
             model: configManager.xaiModel,
             messages: apiMessages,
             stream: false,
-            maxTokens: 1000,
+            maxTokens: nil,
             temperature: 0.7,
             systemPrompt: nil // Remove systemPrompt from here since it's now in messages
         )

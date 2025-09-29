@@ -30,7 +30,7 @@ class CoreDataManager: ObservableObject {
             do {
                 try context.save()
             } catch {
-                print("Save error: \(error)")
+                // Silent error handling
             }
         }
     }
@@ -48,18 +48,8 @@ class CoreDataManager: ObservableObject {
         
         do {
             let result = try context.fetch(request).first
-            print("🔍 Fetching conversation for \(date) (startOfDay: \(startOfDay), endOfDay: \(endOfDay)): \(result != nil ? "Found" : "Not found")")
-            if let found = result {
-                print("   Found conversation with date: \(found.date ?? Date())")
-                print("   Messages count: \(found.messages?.count ?? 0)")
-                print("   hasMessages: \(found.hasMessages)")
-                if let messages = found.messages?.allObjects as? [Message] {
-                    print("   Message roles: \(messages.map { $0.role ?? "nil" })")
-                }
-            }
             return result
         } catch {
-            print("Fetch conversation error: \(error)")
             return nil
         }
     }
@@ -74,12 +64,12 @@ class CoreDataManager: ObservableObject {
         conversation.timestamp = Date()
         conversation.status = "inProgress"
         
-        // Calculate day number based on your app's start date
-        let startDate = calendar.date(from: DateComponents(year: 2025, month: 9, day: 14))!
-        let dayNumber = calendar.dateComponents([.day], from: startDate, to: date).day! + 1
+        // Calculate day number based on the current month's 15th as start date
+        let currentMonth = calendar.component(.month, from: date)
+        let currentYear = calendar.component(.year, from: date)
+        let startDate = calendar.startOfDay(for: calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 15))!)
+        let dayNumber = calendar.dateComponents([.day], from: startDate, to: calendar.startOfDay(for: date)).day! + 1
         conversation.dayNumber = Int16(dayNumber)
-        
-        print("📝 Created new conversation for \(date) -> stored as \(conversation.date!) (Day \(dayNumber))")
         save()
         return conversation
     }
@@ -96,8 +86,6 @@ class CoreDataManager: ObservableObject {
         let existingMessages = conversation.messages?.allObjects as? [Message] ?? []
         message.order = Int16(existingMessages.count)
         
-        print("💬 Added message to conversation (date: \(conversation.date ?? Date())): role=\(role), order=\(message.order), content length=\(content.count)")
-        
         save()
         return message
     }
@@ -109,7 +97,6 @@ class CoreDataManager: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Fetch conversations error: \(error)")
             return []
         }
     }
@@ -134,59 +121,43 @@ class CoreDataManager: ObservableObject {
         save()
     }
     
-    // MARK: - Mock Data Methods
-    
-    /// Creates mock conversations for testing calendar functionality
-    func createMockConversations() {
+    /// Fixes day numbers for existing conversations based on current date logic (one-time fix)
+    func fixExistingDayNumbers() {
+        let userDefaults = UserDefaults.standard
+        let fixKey = "dayNumbersFixed"
+        
+        // Only run this fix once
+        if userDefaults.bool(forKey: fixKey) {
+            return
+        }
+        
+        
+        let conversations = fetchAllConversations()
         let calendar = Calendar.current
+        var needsFix = false
         
-        // Day 1: September 14, 2025
-        let day1Date = calendar.date(from: DateComponents(year: 2025, month: 9, day: 14))!
-        print("📅 Creating mock conversation for Day 1: \(day1Date)")
-        let day1Conversation = createConversation(for: day1Date)
-        day1Conversation.summary = "Explored the concept of mindful creativity and how daily reflection can enhance artistic expression. Discussed the importance of setting intentions before creative work."
-        
-        let day1Messages = [
-            ("I've been feeling stuck in my writing lately. How can I approach creativity more mindfully?", "user"),
-            ("Creative blocks often arise from pressure and expectation. Try beginning each writing session with a simple breathing exercise—four counts in, seven counts hold, eight counts out. This creates space for your authentic voice to emerge. What if you wrote without any goal in mind, just to explore what wants to be said?", "ai"),
-            ("That's beautiful. I love the idea of writing as exploration rather than production.", "user"),
-            ("Exactly. When we release the need to produce something 'good,' we often discover our most genuine expressions. Consider keeping a morning journal where you write three pages of stream-of-consciousness before any 'real' work. This practice clears mental clutter and often reveals unexpected insights.", "ai")
-        ]
-        
-        for (content, role) in day1Messages {
-            _ = addMessage(to: day1Conversation, content: content, role: role)
-        }
-        
-        // Day 2: September 15, 2025 (Today)
-        let day2Date = calendar.date(from: DateComponents(year: 2025, month: 9, day: 15))!
-        print("📅 Creating mock conversation for Day 2: \(day2Date)")
-        let day2Conversation = createConversation(for: day2Date)
-        
-        let day2Messages = [
-            ("I tried the breathing exercise before writing today. It felt different.", "user"),
-            ("Tell me about the difference you noticed. What shifted in your experience?", "ai")
-        ]
-        
-        for (content, role) in day2Messages {
-            _ = addMessage(to: day2Conversation, content: content, role: role)
-        }
-        
-        // Note: Day 3 (Sept 16) is a future day, so no conversation should be created
-        
-        // Final save to ensure all data is persisted
-        save()
-        
-        print("📚 Created mock conversations for testing calendar view")
-        
-        // Debug: List all conversations to verify they were created
-        let allConversations = fetchAllConversations()
-        print("📋 All conversations in database:")
-        for conversation in allConversations {
-            print("   - Date: \(conversation.date ?? Date()), Messages: \(conversation.messages?.count ?? 0), Summary: \(conversation.summary?.isEmpty == false ? "Yes" : "No")")
-            if let messages = conversation.messages?.allObjects as? [Message] {
-                print("     Message roles: \(messages.map { $0.role ?? "nil" })")
+        for conversation in conversations {
+            guard let conversationDate = conversation.date else { continue }
+            
+            // Calculate correct day number
+            let currentMonth = calendar.component(.month, from: conversationDate)
+            let currentYear = calendar.component(.year, from: conversationDate)
+            let startDate = calendar.startOfDay(for: calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 15))!)
+            let correctDayNumber = calendar.dateComponents([.day], from: startDate, to: calendar.startOfDay(for: conversationDate)).day! + 1
+            
+            // Update if different
+            if conversation.dayNumber != Int16(correctDayNumber) {
+                conversation.dayNumber = Int16(correctDayNumber)
+                needsFix = true
             }
         }
+        
+        if needsFix {
+            save()
+        }
+        
+        // Mark as fixed so we don't run this again
+        userDefaults.set(true, forKey: fixKey)
     }
     
     // MARK: - Cleanup Methods
