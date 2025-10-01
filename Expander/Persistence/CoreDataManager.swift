@@ -64,11 +64,9 @@ class CoreDataManager: ObservableObject {
         conversation.timestamp = Date()
         conversation.status = "inProgress"
         
-        // Calculate day number based on the current month's 15th as start date
-        let currentMonth = calendar.component(.month, from: date)
-        let currentYear = calendar.component(.year, from: date)
-        let startDate = calendar.startOfDay(for: calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 15))!)
-        let dayNumber = calendar.dateComponents([.day], from: startDate, to: calendar.startOfDay(for: date)).day! + 1
+        // Calculate day number based on October 1st, 2025 (fixed app start date)
+        let startDate = calendar.startOfDay(for: calendar.date(from: DateComponents(year: 2025, month: 10, day: 1))!)
+        let dayNumber = calendar.dateComponents([.day], from: startDate, to: calendar.startOfDay(for: date)).day!
         conversation.dayNumber = Int16(dayNumber)
         save()
         return conversation
@@ -101,6 +99,24 @@ class CoreDataManager: ObservableObject {
         }
     }
     
+    /// Get the earliest conversation date (app start date)
+    func getEarliestConversationDate() -> Date? {
+        let request: NSFetchRequest<Conversation> = Conversation.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Conversation.date, ascending: true)]
+        request.fetchLimit = 1
+        
+        do {
+            let conversations = try context.fetch(request)
+            let earliestDate = conversations.first?.date
+            
+            
+            return earliestDate
+        } catch {
+            print("Error fetching earliest conversation: \(error)")
+            return nil
+        }
+    }
+    
     func getOrCreateConversation(for date: Date) -> Conversation {
         if let existingConversation = fetchConversation(for: date) {
             return existingConversation
@@ -121,29 +137,24 @@ class CoreDataManager: ObservableObject {
         save()
     }
     
-    /// Fixes day numbers for existing conversations based on current date logic (one-time fix)
+    /// Fixes day numbers for existing conversations based on current date logic
     func fixExistingDayNumbers() {
-        let userDefaults = UserDefaults.standard
-        let fixKey = "dayNumbersFixed"
-        
-        // Only run this fix once
-        if userDefaults.bool(forKey: fixKey) {
-            return
-        }
-        
+        // Always recalculate day numbers when this method is called
         
         let conversations = fetchAllConversations()
+        
         let calendar = Calendar.current
         var needsFix = false
         
         for conversation in conversations {
-            guard let conversationDate = conversation.date else { continue }
+            guard let conversationDate = conversation.date else { 
+                continue 
+            }
             
-            // Calculate correct day number
-            let currentMonth = calendar.component(.month, from: conversationDate)
-            let currentYear = calendar.component(.year, from: conversationDate)
-            let startDate = calendar.startOfDay(for: calendar.date(from: DateComponents(year: currentYear, month: currentMonth, day: 15))!)
-            let correctDayNumber = calendar.dateComponents([.day], from: startDate, to: calendar.startOfDay(for: conversationDate)).day! + 1
+            // Calculate correct day number based on October 1st, 2025 (fixed app start date)
+            let startDate = calendar.startOfDay(for: calendar.date(from: DateComponents(year: 2025, month: 10, day: 1))!)
+            let correctDayNumber = calendar.dateComponents([.day], from: startDate, to: calendar.startOfDay(for: conversationDate)).day!
+            
             
             // Update if different
             if conversation.dayNumber != Int16(correctDayNumber) {
@@ -156,8 +167,7 @@ class CoreDataManager: ObservableObject {
             save()
         }
         
-        // Mark as fixed so we don't run this again
-        userDefaults.set(true, forKey: fixKey)
+        // Day numbers have been recalculated
     }
     
     // MARK: - Cleanup Methods

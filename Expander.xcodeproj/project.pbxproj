@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		34678FDB7009C561C4EAC8E5 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F3C872C4A9A630C5CA1382 /* ChatView.swift */; };
 		5CDB87DD2E76217F00DA0A1F /* ExpanderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */; };
 		5CDB87DF2E76217F00DA0A1F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB87DE2E76217F00DA0A1F /* ContentView.swift */; };
 		5CDB87E12E76218000DA0A1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5CDB87E02E76218000DA0A1F /* Assets.xcassets */; };
@@ -24,6 +25,21 @@
 		5CDB88242E76D00000DA0A1F /* Message+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */; };
 		5CDB88262E76D00000DA0A1F /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDB88252E76D00000DA0A1F /* ConfigManager.swift */; };
 		5CDB88282E76D00000DA0A1F /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5CDB88272E76D00000DA0A1F /* Config.plist */; };
+		BA5FF8222BB392CA3E39F592 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0BB50EE531942954459D3 /* ChatViewModel.swift */; };
+		924ACE77F9C8426481581FD6 /* DailyConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBA557B6DCA462681323DDA /* DailyConversationViewModel.swift */; };
+		2ED3672D85894DA6B09BCCAE /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E662CBC4C1C433C9EA001E9 /* SettingsViewModel.swift */; };
+		01EC49B436EC4D94B3AD1D6B /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77825C7202F04F67BE75E414 /* CalendarViewModel.swift */; };
+		A8D56B4982844F9F85E3E541 /* BreathworkTimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A25F129EE540C2AF3A4954 /* BreathworkTimerViewModel.swift */; };
+		0ECA47A35B264F9C9E3D44A9 /* FooterWithGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C28E18F818943179865F410 /* FooterWithGradient.swift */; };
+		6CF2B9B8C02B41299F0EC8CC /* CompactBreathworkTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E944CF56E447B9913AF5D4 /* CompactBreathworkTimerView.swift */; };
+		F7AF10F764D74F21BD8881B0 /* CustomHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0595A6F476444E89854AC9 /* CustomHeaderView.swift */; };
+		D13EAB10A3914750B0FB12E2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C59E699347C436883B1F7C2 /* SettingsView.swift */; };
+		0993CF31C37948548F990F65 /* CustomCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB9CAC9DB184AAA877C8D3F /* CustomCalendarView.swift */; };
+		F85A28A2ECE041199BE437F0 /* DailyConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D85BD851F7464BB381F844 /* DailyConversationView.swift */; };
+		2420C3E3BB3845D6AEB2D1A3 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E7C7C444AE4598A6B703CC /* CalendarView.swift */; };
+		475CE4567A87438EBA618549 /* DayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54CD301C6054B6EA38AE537 /* DayView.swift */; };
+		1CD0E6A7933A490491235F5D /* BreathworkTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FDDA5BB10F40328A709CCC /* BreathworkTimerView.swift */; };
+		A70B760BE35E449D96C4B1BA /* BreathworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF08A8C5ADD04A26B9972BFA /* BreathworkView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +60,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		35F3C872C4A9A630C5CA1382 /* ChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Chat/ChatView.swift"; sourceTree = SOURCE_ROOT; };
 		5CDB87D92E76217F00DA0A1F /* Expander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Expander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDB87DC2E76217F00DA0A1F /* ExpanderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderApp.swift; sourceTree = "<group>"; };
 		5CDB87DE2E76217F00DA0A1F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -55,15 +72,30 @@
 		5CDB87F72E76218000DA0A1F /* ExpanderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderUITests.swift; sourceTree = "<group>"; };
 		5CDB87F92E76218000DA0A1F /* ExpanderUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpanderUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5CDB88072E76CA3600DA0A1F /* ExpanderModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ExpanderModel.xcdatamodel; sourceTree = "<group>"; };
-		5CDB88192E76FBAA00DA0A1F /* LLMModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMModels.swift; sourceTree = "<group>"; };
-		5CDB881A2E76FBAA00DA0A1F /* LLMError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMError.swift; sourceTree = "<group>"; };
-		5CDB881B2E76FBAA00DA0A1F /* LLMService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
-		5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
-		5CDB881F2E77EFE900DA0A1F /* DailyOrchestrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyOrchestrator.swift; sourceTree = "<group>"; };
-		5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+Extensions.swift"; sourceTree = "<group>"; };
-		5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Extensions.swift"; sourceTree = "<group>"; };
-		5CDB88252E76D00000DA0A1F /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
-		5CDB88272E76D00000DA0A1F /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
+		5CDB88192E76FBAA00DA0A1F /* LLMModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Expander/LLM/LLMModels.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB881A2E76FBAA00DA0A1F /* LLMError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Expander/LLM/LLMError.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB881B2E76FBAA00DA0A1F /* LLMService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Expander/LLM/LLMService.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB881F2E76D00000DA0A1F /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Expander/Persistence/CoreDataManager.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB881F2E77EFE900DA0A1F /* DailyOrchestrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Expander/Orchestration/DailyOrchestrator.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB88212E76D00000DA0A1F /* Conversation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Expander/Persistence/Extensions/Conversation+Extensions.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB88232E76D00000DA0A1F /* Message+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Expander/Persistence/Extensions/Message+Extensions.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB88252E76D00000DA0A1F /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Expander/Config/ConfigManager.swift"; sourceTree = SOURCE_ROOT; };
+		5CDB88272E76D00000DA0A1F /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Expander/Config/Config.plist"; sourceTree = SOURCE_ROOT; };
+		80D0BB50EE531942954459D3 /* ChatViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/ViewModels/ChatViewModel.swift"; sourceTree = SOURCE_ROOT; };
+		6CBA557B6DCA462681323DDA /* DailyConversationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/ViewModels/DailyConversationViewModel.swift"; sourceTree = SOURCE_ROOT; };
+		8E662CBC4C1C433C9EA001E9 /* SettingsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/ViewModels/SettingsViewModel.swift"; sourceTree = SOURCE_ROOT; };
+		77825C7202F04F67BE75E414 /* CalendarViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/ViewModels/CalendarViewModel.swift"; sourceTree = SOURCE_ROOT; };
+		81A25F129EE540C2AF3A4954 /* BreathworkTimerViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/ViewModels/BreathworkTimerViewModel.swift"; sourceTree = SOURCE_ROOT; };
+		5C28E18F818943179865F410 /* FooterWithGradient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Components/Footer/FooterWithGradient.swift"; sourceTree = SOURCE_ROOT; };
+		F2E944CF56E447B9913AF5D4 /* CompactBreathworkTimerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Components/Breathwork/CompactBreathworkTimerView.swift"; sourceTree = SOURCE_ROOT; };
+		3C0595A6F476444E89854AC9 /* CustomHeaderView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Components/Header/CustomHeaderView.swift"; sourceTree = SOURCE_ROOT; };
+		8C59E699347C436883B1F7C2 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Settings/SettingsView.swift"; sourceTree = SOURCE_ROOT; };
+		DFB9CAC9DB184AAA877C8D3F /* CustomCalendarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Calendar/CustomCalendarView.swift"; sourceTree = SOURCE_ROOT; };
+		91D85BD851F7464BB381F844 /* DailyConversationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Calendar/DailyConversationView.swift"; sourceTree = SOURCE_ROOT; };
+		55E7C7C444AE4598A6B703CC /* CalendarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Calendar/CalendarView.swift"; sourceTree = SOURCE_ROOT; };
+		D54CD301C6054B6EA38AE537 /* DayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Calendar/DayView.swift"; sourceTree = SOURCE_ROOT; };
+		D2FDDA5BB10F40328A709CCC /* BreathworkTimerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Breathwork/BreathworkTimerView.swift"; sourceTree = SOURCE_ROOT; };
+		FF08A8C5ADD04A26B9972BFA /* BreathworkView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Expander/Views/Breathwork/BreathworkView.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +160,8 @@
 				5CDB88062E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld */,
 				5CDB87E02E76218000DA0A1F /* Assets.xcassets */,
 				5CDB87E22E76218000DA0A1F /* Preview Content */,
+				80D0BB50EE531942954459D3 /* ChatViewModel.swift */,
+				35F3C872C4A9A630C5CA1382 /* ChatView.swift */,
 			);
 			path = Expander;
 			sourceTree = "<group>";
@@ -299,6 +333,22 @@
 				5CDB88242E76D00000DA0A1F /* Message+Extensions.swift in Sources */,
 				5CDB88262E76D00000DA0A1F /* ConfigManager.swift in Sources */,
 				5CDB88082E76CA3600DA0A1F /* ExpanderModel.xcdatamodeld in Sources */,
+				BA5FF8222BB392CA3E39F592 /* ChatViewModel.swift in Sources */,
+				34678FDB7009C561C4EAC8E5 /* ChatView.swift in Sources */,
+				924ACE77F9C8426481581FD6 /* DailyConversationViewModel.swift in Sources */,
+				2ED3672D85894DA6B09BCCAE /* SettingsViewModel.swift in Sources */,
+				01EC49B436EC4D94B3AD1D6B /* CalendarViewModel.swift in Sources */,
+				A8D56B4982844F9F85E3E541 /* BreathworkTimerViewModel.swift in Sources */,
+				0ECA47A35B264F9C9E3D44A9 /* FooterWithGradient.swift in Sources */,
+				6CF2B9B8C02B41299F0EC8CC /* CompactBreathworkTimerView.swift in Sources */,
+				F7AF10F764D74F21BD8881B0 /* CustomHeaderView.swift in Sources */,
+				D13EAB10A3914750B0FB12E2 /* SettingsView.swift in Sources */,
+				0993CF31C37948548F990F65 /* CustomCalendarView.swift in Sources */,
+				F85A28A2ECE041199BE437F0 /* DailyConversationView.swift in Sources */,
+				2420C3E3BB3845D6AEB2D1A3 /* CalendarView.swift in Sources */,
+				475CE4567A87438EBA618549 /* DayView.swift in Sources */,
+				1CD0E6A7933A490491235F5D /* BreathworkTimerView.swift in Sources */,
+				A70B760BE35E449D96C4B1BA /* BreathworkView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -633,7 +683,7 @@
 			);
 			currentVersion = 5CDB88072E76CA3600DA0A1F /* ExpanderModel.xcdatamodel */;
 			name = ExpanderModel.xcdatamodeld;
-			path = /Users/rit/Desktop/code/2025/Expander/Expander/ExpanderModel.xcdatamodeld;
+			path = /Users/rit/Desktop/code/2025/Expander/Expander/Persistence/ExpanderModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
